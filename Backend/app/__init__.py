@@ -15,7 +15,7 @@ from app.Auth import auth_bp
 from app.SignUp import signup_bp
 
 
-
+#<................................>
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(signup_bp)
