@@ -12,6 +12,7 @@ class Organization(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     users = db.relationship("User", back_populates="organization")
+    status = db.Column(db.Boolean, default=True)
     def __repr__(self):
         return f"<Organization {self.name}>"
 
@@ -43,7 +44,7 @@ class User(db.Model):
         secondary=user_roles,
         back_populates="users"
     )
-
+    status = db.Column(db.Boolean, default=True)
     def has_role(self, role_name):
         return role_name in [role.name for role in self.roles]
 
@@ -54,5 +55,6 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     users = db.relationship("User",secondary=user_roles,back_populates="roles")
+    status = db.Column(db.Boolean, default=True)
     def __repr__(self):
         return f"<Role {self.name}>"

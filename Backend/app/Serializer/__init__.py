@@ -15,7 +15,7 @@ class RoleSchema(ma.SQLAlchemyAutoSchema):
 class UserSchema(ma.SQLAlchemyAutoSchema):
     organization = ma.Nested(OrganizationSchema)
     # role = ma.Nested(RoleSchema)
-    role = ma.Nested(RoleSchema, many=True)   # ✅ FIXED
+    roles = ma.Nested(RoleSchema, many=True)   # ✅ FIXED
     class Meta:
         model = User
         load_instance = True

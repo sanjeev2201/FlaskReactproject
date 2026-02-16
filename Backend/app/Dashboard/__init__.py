@@ -9,23 +9,54 @@ dashboard_bp = Blueprint('dashboard', __name__ , url_prefix='/api')
 @jwt_required()
 def get_users():
     Userroles = get_jwt()
-    if "Admin" not in Userroles["roles"]:
-        current_user = get_jwt_identity()
-        print('access deny userid : ' ,current_user)
-        users_schema = UserSchema(many=True) # use for single schema
-        users = db.session.query(User).filter_by(id=current_user).all()
-        return users_schema.jsonify(users)
+    if "Admin" in Userroles["roles"]:
+        users_schema = UserSchema(many=True)
+        current_page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+        offset_value = (current_page - 1) * per_page
+        # Active users with pagination
+        users = db.session.query(User).filter_by(status=True).offset(offset_value).limit(per_page).all()
         
-    users_schema = UserSchema(many=True)
-    users = db.session.query(User).all()
-    return users_schema.jsonify(users)
+        trash_users = db.session.query(User).filter_by(status=False).all()
+
+        # Counts
+        active_count = db.session.query(User).filter_by(status=True).count()
+        trash_count = db.session.query(User).filter_by(status=False).count()
+        total_users = db.session.query(User).count()
+
+        # Total pages
+        total_pages = (active_count + per_page - 1) // per_page
+        if len(users)>0:
+            # Serialize data properly
+            response_data = {
+                "data": users_schema.dump(users),
+                "current_page": current_page,
+                "pages": total_pages,
+                "TrashAllusers": users_schema.dump(trash_users),
+                "AllUsers": total_users,
+                "ActiveUsers": active_count,
+                "TrashUsers": trash_count
+            }
+            # print(response_data)
+            return jsonify(data=response_data)
+
     
-@dashboard_bp.route('/users/<int:id>', methods=['GET'])
-# @jwt_required()
-def get_user(id):
-    user = User.query.get_or_404(id)
-    user_schema = UserSchema()   # not many=True
-    return user_schema.jsonify(user)
+        else:
+            response_data = {"data":[],"TrashAllusers":users_schema.dump(trash_users),'AllUsers':total_users,'ActiveUsers':0,'TrashUsers':trash_count}
+            return jsonify(response_data)
+    # other than admin user
+    else:   
+        current_user = get_jwt_identity()
+        # print('access deny userid : ' ,current_user)
+        users_schema = UserSchema(many=True)
+        users = db.session.query(User).filter_by(id=current_user,status=1).all()
+        response_data = {
+                "data": users_schema.dump(users),
+            }
+        # print(response_data)
+        return jsonify(data=response_data)
+    
+
 
 
 

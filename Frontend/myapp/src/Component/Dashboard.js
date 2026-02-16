@@ -20,8 +20,6 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
   const itemsPerPage = 5; // Number of items per page
@@ -46,21 +44,14 @@ function Dashboard() {
       const response = await axios.get("http://127.0.0.1:5000/api/dashboard/", {
         params: { page, per_page: itemsPerPage },
       });
-      setEmployees(response.data);
-      setCountAllEmployees(10);
-      setCountActiveEmployees(5);
-      setCountTrashEmployees(3);
-      setTrashAllusers(4);
-      setCurrentPage(5);
-      setTotalPages(6);
-
-
-      // setCountAllEmployees(response.data['AllUsers']);
-      // setCountActiveEmployees(response.data['ActiveUsers']);
-      // setCountTrashEmployees(response.data['TrashUsers']);
-      // setTrashAllusers(response.data['TrashAllusers']);
-      // setCurrentPage(response.data.current_page);
-      // setTotalPages(response.data.pages);
+      const responseData = response.data.data;
+      setEmployees(responseData.data);
+      setCountAllEmployees(responseData.AllUsers);
+      setCountActiveEmployees(responseData.ActiveUsers);
+      setCountTrashEmployees(responseData.TrashUsers);
+      setTrashAllusers(responseData.TrashAllusers);
+      setCurrentPage(responseData.current_page);
+      setTotalPages(responseData.pages);
     }catch (error) {
       console.error("Error fetching items:", error);
     } finally {
@@ -84,7 +75,7 @@ function Dashboard() {
 
   const saveChanges = () => {
     if (selectedEmployee) {
-      axios.put(`http://127.0.0.1:8034/api/tasks/${selectedEmployee.id}/`, selectedEmployee)
+      axios.put(`http://127.0.0.1:5000/api/EmployeeUser/${selectedEmployee.id}/`, selectedEmployee)
       
         .then(response => {
           debugger;
@@ -107,7 +98,7 @@ function Dashboard() {
 
   const handleDelete = (emp_id) => {
     debugger;
-    axios.delete(`http://127.0.0.1:8034/api/tasks/${emp_id}`)
+    axios.delete(`http://127.0.0.1:5000/api/deletebyadmin/${emp_id}`)
       .then(response => {
         const message = response.data['message'];
         toast.error(message, {
@@ -122,7 +113,7 @@ function Dashboard() {
   };
   const handleRestore = (emp_id) => {
     debugger;
-    axios.patch(`http://127.0.0.1:8034/api/tasks/${emp_id}/`)
+    axios.patch(`http://127.0.0.1:5000/api/restorebyadmin/${emp_id}`)
       .then(response => {
         const message = response.data['message'];
         toast.success(message, {
@@ -219,7 +210,7 @@ const role = localStorage.getItem("role");
                       <th>Username</th>
                       <th>Email</th>
                       <th>Organization</th>
-                      
+                      <th>Role</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -229,7 +220,11 @@ const role = localStorage.getItem("role");
                 <td>{employee.username}</td>
                 <td>{employee.email}</td>
                 <td>{employee.organization.name}</td>
-              
+                <td>
+                    {employee.roles.map((role) => (
+                      <p key={role.id}>{role.name}</p>
+                    ))}
+                </td>
                 <td>
                   
                    {role === "Admin" && (
@@ -333,29 +328,31 @@ const role = localStorage.getItem("role");
                         <table className="table table-bordered table-hover">
                           <thead className="thead-light">
                             <tr>
-                              <th>Name</th>
-                              <th>Phone Number</th>
-                              <th>Email</th>
-                              <th>Joining Date</th>
-                              <th>Last Updated Date</th>
-                              <th>Action</th>
+                             <th>Username</th>
+                            <th>Email</th>
+                            <th>Organization</th>
+                            <th>Role</th>
+                            <th>Action</th>
                             </tr>
                           </thead>
                           <tbody>
 
-                          {/* {TrashAllusers.map((employee, index) => (
+                          {TrashAllusers.map((employee, index) => (
                       <tr key={index}>
                         <td>{employee.username}</td>
-                        <td>{employee.phone}</td>
                         <td>{employee.email}</td>
-                        <td>{formatDate(employee.Created_date)}</td>
-                        <td>{formatDate(employee.Updated_date)}</td>
+                        <td>{employee.organization.name}</td>
+                        <td>
+                          {employee.roles.map((role) => (
+                            <p key={role.id}>{role.name}</p>
+                          ))}
+                </td>
                         <td>
                           
                           <button onClick={() => handleRestore(employee.id)} className="btn btn-danger">Restore</button>
                         </td>
                       </tr>
-                    ))} */}
+                    ))}
 
 
                             

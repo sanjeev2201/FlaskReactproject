@@ -16,7 +16,7 @@ function UpdateUser() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Load user
+    debugger;
     api.get(`/api/users/${id}`)
       .then((res) => {
         const data = res.data;
@@ -26,7 +26,7 @@ function UpdateUser() {
         setOrganization(data.organization_id);
 
         // 🔥 IMPORTANT FIX
-        setRoles(data.roles.map(r => Number(r)));
+        setRoles(data.roles.map(r => Number(r.id)));
       })
       .catch((err) => console.error(err));
 
@@ -64,10 +64,10 @@ function UpdateUser() {
     };
 
     try {
-      await api.put(`/api/users/${id}`, payload);
+      await api.put(`/api/userupdatebyadmin/${id}`, payload);
 
       toast.success("User updated successfully!");
-      setTimeout(() => navigate("/Employee"), 1500);
+      setTimeout(() => navigate("/"), 1500);
 
     } catch (err) {
       setError("Update failed");
@@ -139,6 +139,7 @@ function UpdateUser() {
                 Update User
                 </button>
             </form>
+            <ToastContainer />
             </div>
         </div>
   )}
