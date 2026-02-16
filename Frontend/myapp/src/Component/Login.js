@@ -3,7 +3,7 @@ import './Login.css'; // Custom styling for Login
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Resetpassword = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,16 +13,19 @@ const Resetpassword = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Send login request to the backend
-      const response = await axios.post('http://127.0.0.1:8000/api/resetpwd/', { email, password });
+      const response = await axios.post('http://127.0.0.1:5000/auth/login/', {email,password});
       if (response.status === 200) {
-        // Redirect to a protected route
-        navigate('/login');
+        debugger;
+        const accesstoken = response.data.access_token; 
+        localStorage.setItem('AccessToken', accesstoken);
+        localStorage.setItem('RefreshToken', response.data.refresh_token);
+        localStorage.setItem('role', response.data.roles[0]);
+        navigate('/');
       }
     } catch (error) {
       // Handle errors
       if (error.response && error.response.data) {
-        setError(error.response.data.message || 'reset password failed');
+        setError(error.response.data.message || 'Login failed');
       } else {
         setError('An unexpected error occurred');
       }
@@ -34,7 +37,7 @@ const Resetpassword = () => {
       <div className="login-container">
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleLogin} className="login-form">
-          <h2>Forget Password</h2>
+          <h2>Login</h2>
           <div className="form-group">
             <input
               type="email"
@@ -66,7 +69,10 @@ const Resetpassword = () => {
             </button>
           </div>
           <p>
-            Already have an account? <a href="/login">login</a>
+            Don't have an account? <a href="/Signup">Register</a>
+                      <p>
+            Forget password? <a href="/Resetpassword">Forget password</a>
+          </p>
           </p>
         </form>
       </div>
@@ -74,4 +80,4 @@ const Resetpassword = () => {
   );
 };
 
-export default Resetpassword;
+export default Login;

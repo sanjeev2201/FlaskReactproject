@@ -6,11 +6,9 @@ const Logout = async () => {
   try {
     debugger;
     const access = localStorage.getItem("AccessToken");
-    const refresh = localStorage.getItem("RefreshToken");
-
     await axios.post(
-      "http://localhost:8000/api/logout/",
-      { refresh },
+      "http://localhost:5000/api/logout/",
+      { access },
       {
         headers: {
           Authorization: `Bearer ${access}`,

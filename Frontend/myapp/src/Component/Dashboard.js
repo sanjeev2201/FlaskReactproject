@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Dashboard.css';
 import ReactPaginate from 'react-paginate';
-
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   const [employees, setEmployees] = useState([]);
@@ -43,12 +43,12 @@ function Dashboard() {
     setError(null);
     try{
       debugger;
-      const response = await axios.get("http://127.0.0.1:8000/api/dashboard/", {
+      const response = await axios.get("http://127.0.0.1:5000/api/dashboard/", {
         params: { page, per_page: itemsPerPage },
       });
-      setEmployees(response.data['users']);
-      setCountAllEmployees(response.data.total_users);
-      setCountActiveEmployees(response.data.total_organizations);
+      setEmployees(response.data);
+      setCountAllEmployees(10);
+      setCountActiveEmployees(5);
       setCountTrashEmployees(3);
       setTrashAllusers(4);
       setCurrentPage(5);
@@ -147,27 +147,33 @@ function Dashboard() {
   }
 };
 
-
+const role = localStorage.getItem("role");
 
 
   return (
     <div className="Dashboard">
       <header className="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a className="navbar-brand" href="/">Employee</a>
-        <a className="navbar-brand" href="/Booking">Sign Up</a>
-        <a className="navbar-brand" href="/login">login</a>
+      {role === "Admin" && (
+                <>
+                <Link className="navbar-brand" to="/Master">Master</Link>
+                <Link className="navbar-brand" to="/Employee">Employee</Link>
+              </>
+            )}
+
+      {role === "Employee" && (
+        <Link className="navbar-brand" to="/Employee">Master</Link>
+      )}
+       
+ 
         <a className="navbar-brand" href="/Logout">Logout</a>
-        <a className="navbar-brand" href="/FileUpload">FileUpload</a>
-        <img
-            // src={userProfile.profilePic}
-            // alt={`${userProfile.name}'s profile`}
-            src='http://127.0.0.1:5001/static/uploads/Sachin.jpeg'
-            style={{ width: '64px', borderRadius: '50%'}}
-          />
+
       </header>
 
       <div className="container mt-4">
-        <h1 className="mb-4">Employee Dashboard</h1>
+        {role === 'Admin' ? <h1>Admin Dashboard</h1> : <h1>Employee Dashboard</h1>}
+        
+        
+        {role==='Admin' && (
         <div className="row">
           <div className="col-md-4">
             <div className="card text-white bg-info mb-3">
@@ -198,6 +204,8 @@ function Dashboard() {
             </div>
           </div>
         </div>
+        )}
+
 
         {/* Recent Bookings */}
         <div className="row mt-4">
@@ -211,34 +219,39 @@ function Dashboard() {
                       <th>Username</th>
                       <th>Email</th>
                       <th>Organization</th>
-                      <th>Role Name</th>
-                      {/* <th>Last Updated Date</th> */}
+                      
                       <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody> 
                   {employees.map((employee, index) => (
               <tr key={index}>
                 <td>{employee.username}</td>
                 <td>{employee.email}</td>
                 <td>{employee.organization.name}</td>
-                {/* Roles */}
-              <td>
-                {employee.roles.map((role) => (
-                  <div key={role.id}>
-                    {role.name}
-                  </div>
-                ))}
-              </td>
-                
-                {/* <td>{employee.Updated_date}</td> */}
+              
                 <td>
-                  <button onClick={() => handleUpdate(employee)} className="btn btn-warning">Update</button>
-                  <button onClick={() => handleDelete(employee.id)} className="btn btn-danger">Delete</button>
+                  
+                   {role === "Admin" && (
+                    <>
+                    <Link to={`/UpdateUser/${employee.id}`} className="btn btn-primary">
+                          Update
+                        </Link>
+                    <button onClick={() => handleDelete(employee.id)} className="btn btn-danger">Delete</button>
+                        
+                    </>
+                      
+                    )}
+                  {role !=='Admin' && (
+                    <button onClick={() => handleUpdate(employee)} className="btn btn-warning">Update</button>
+                  )}
                 </td>
               </tr>
             ))}
-            <button
+
+            {role==='Admin' && (
+              <> 
+                            <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
@@ -255,6 +268,12 @@ function Dashboard() {
             >
               Next
             </button>
+            </>
+            )}
+            
+
+
+
                   </tbody>
                 </table>
         <div className="modal fade" id="updateModal" tabIndex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
@@ -278,13 +297,13 @@ function Dashboard() {
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="Phone" className="form-label">Phone</label>
+                  <label htmlFor="email" className="form-label">Email</label>
                   <input
                     type="text"
                     className="form-control"
-                    id="Phone"
-                    value={selectedEmployee?.phone || ''}
-                    onChange={(e) => setSelectedEmployee({ ...selectedEmployee, phone: e.target.value })}
+                    id="email"
+                    value={selectedEmployee?.email || ''}
+                    onChange={(e) => setSelectedEmployee({ ...selectedEmployee, email: e.target.value })}
                     required
                   />
                 </div>
@@ -304,49 +323,50 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Guest Information Section */}
-        <div className="row mt-4">
-          <div className="col-md-12">
-            <div className="card">
-              <div className="card-header">Trash Users</div>
-              <div className="card-body">
-                <table className="table table-bordered table-hover">
-                  <thead className="thead-light">
-                    <tr>
-                      <th>Name</th>
-                      <th>Phone Number</th>
-                      <th>Email</th>
-                      <th>Joining Date</th>
-                      <th>Last Updated Date</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+            {}
+          {role==='Admin' && (
+                <div className="row mt-4">
+                  <div className="col-md-12">
+                    <div className="card">
+                      <div className="card-header">Trash Users</div>
+                      <div className="card-body">
+                        <table className="table table-bordered table-hover">
+                          <thead className="thead-light">
+                            <tr>
+                              <th>Name</th>
+                              <th>Phone Number</th>
+                              <th>Email</th>
+                              <th>Joining Date</th>
+                              <th>Last Updated Date</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
 
-                  {/* {TrashAllusers.map((employee, index) => (
-              <tr key={index}>
-                <td>{employee.username}</td>
-                <td>{employee.phone}</td>
-                <td>{employee.email}</td>
-                <td>{formatDate(employee.Created_date)}</td>
-                <td>{formatDate(employee.Updated_date)}</td>
-                <td>
-                  
-                  <button onClick={() => handleRestore(employee.id)} className="btn btn-danger">Restore</button>
-                </td>
-              </tr>
-            ))} */}
+                          {/* {TrashAllusers.map((employee, index) => (
+                      <tr key={index}>
+                        <td>{employee.username}</td>
+                        <td>{employee.phone}</td>
+                        <td>{employee.email}</td>
+                        <td>{formatDate(employee.Created_date)}</td>
+                        <td>{formatDate(employee.Updated_date)}</td>
+                        <td>
+                          
+                          <button onClick={() => handleRestore(employee.id)} className="btn btn-danger">Restore</button>
+                        </td>
+                      </tr>
+                    ))} */}
 
 
-                    
-                    
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
+                            
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+          )}
         
 
       </div>

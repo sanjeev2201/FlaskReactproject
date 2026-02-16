@@ -1,16 +1,13 @@
 import './App.css'
 // import './Register.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Signup from './pages/signup';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import Header from './Header';
-import Payment from './components/Payment';
+import Signup from './Component/signup';
+import Dashboard from './Component/Dashboard';
+import Login from './Component/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Logout from './pages/Logout';
-import FileUpload from './pages/FileUpload';
-import Resetpassword from './pages/Resetpwd';
-
+import Logout from './Component/Logout';
+import Resetpassword from './Component/Resetpwd';
+import UpdateUser from './Component/UpdateUser';
 function App() {
   return (
     
@@ -22,10 +19,9 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/Signup" element={<Signup/>} />
           <Route path="/login" element={<Login />} />
-          <Route path="/Payment" element={<Payment/>} />
           <Route path="/Logout" element={<Logout/>} />
-          <Route path="/FileUpload" element={<FileUpload/>} />
           <Route path="/Resetpassword" element={<Resetpassword/>} />
+          <Route path="/UpdateUser/:id" element={<UpdateUser />} />
         </Routes>
         </main>
         </Router>

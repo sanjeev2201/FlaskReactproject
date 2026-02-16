@@ -5,8 +5,7 @@ user_roles = db.Table(
                 "user_roles",
                 db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
                 db.Column("role_id", db.Integer, db.ForeignKey("roles.id"), primary_key=True),
-            )
-
+                )
 
 class Organization(db.Model):
     __tablename__ = "organizations"
@@ -23,6 +22,8 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 
     # One Organization
     organization_id = db.Column(
