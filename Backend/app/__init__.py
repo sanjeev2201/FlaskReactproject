@@ -29,9 +29,12 @@ from app.Auth import auth_bp
 from app.SignUp import signup_bp
 from app.Dashboard import dashboard_bp
 from app.Dashboard.admin import admin_bp
+from app.Profile import profile_bp
+
 #<................................>
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(signup_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(profile_bp)

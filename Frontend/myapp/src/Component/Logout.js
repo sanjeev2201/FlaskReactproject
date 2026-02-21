@@ -5,13 +5,15 @@ const Logout = async () => {
     isLoggingOut = true;
   try {
     debugger;
-    const access = localStorage.getItem("AccessToken");
+    const AccessToken = localStorage.getItem("AccessToken");
+    const RefreshToken = localStorage.getItem("RefreshToken");
+    const role = localStorage.getItem('role');
     await axios.post(
       "http://localhost:5000/api/logout/",
-      { access },
+      { AccessToken, RefreshToken: RefreshToken, role },
       {
         headers: {
-          Authorization: `Bearer ${access}`,
+          Authorization: `Bearer ${AccessToken}`,
         },
       }
     );

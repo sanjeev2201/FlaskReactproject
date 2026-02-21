@@ -143,7 +143,7 @@ const role = localStorage.getItem("role");
 
   return (
     <div className="Dashboard">
-      <header className="navbar navbar-expand-lg navbar-dark bg-primary">
+      {/* <header className="navbar navbar-expand-lg navbar-dark bg-primary">
       {role === "Admin" && (
                 <>
                 <Link className="navbar-brand" to="/Master">Master</Link>
@@ -158,7 +158,7 @@ const role = localStorage.getItem("role");
  
         <a className="navbar-brand" href="/Logout">Logout</a>
 
-      </header>
+      </header> */}
 
       <div className="container mt-4">
         {role === 'Admin' ? <h1>Admin Dashboard</h1> : <h1>Employee Dashboard</h1>}
