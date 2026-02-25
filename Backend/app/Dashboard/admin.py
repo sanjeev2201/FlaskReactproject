@@ -1,6 +1,6 @@
 from flask import Blueprint,request,jsonify
 from app.Serializer import UserSchema
-from flask_jwt_extended import jwt_required , get_jwt
+from flask_jwt_extended import current_user, get_jwt_identity, jwt_required
 admin_bp = Blueprint('admin', __name__ , url_prefix='/api')
 
 from app.Models import Organization , Role , User , db
@@ -8,10 +8,10 @@ from app.Serializer import OrganizationSchema , RoleSchema
 from marshmallow import ValidationError
 #........................................................>
 @admin_bp.route('/organization/', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def get_organizations():
     try:
-        query_organization= db.session.query(Organization).all()
+        query_organization= db.session.query(Organization).filter_by(status=1).all()
         organization_schema = OrganizationSchema(many=True)
         return organization_schema.jsonify(query_organization)
     except ValidationError as err:
@@ -43,7 +43,7 @@ def create_role():
     return {'message': 'roles added successfully !!!!'}
 
 @admin_bp.route('/role/', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def get_role():
     query_role = db.session.query(Role).filter_by(status=1).all()
     role_schema = RoleSchema(many=True)
@@ -128,14 +128,10 @@ def restorerole(id):
 @jwt_required()
 def logout():
     try:
-        # Get the JSON payload sent from the frontend
         data = request.get_json()
-        
-        # Extract the data
         access_token = data.get('AccessToken')
         refresh_token = data.get('RefreshToken')
         role = data.get('role')
-        # print(access_token,refresh_token,role)
         print('token blacklisted')
         return jsonify({"message": "Logout successful"}), 200
 
@@ -170,16 +166,24 @@ def userupdationbyadmin(id):
     db.session.commit()
     return {"message": "New Employee updation successful"}
 @admin_bp.route('/deletebyadmin/<int:id>', methods=['DELETE'])
+@jwt_required()
 def deletebyadmin(id):
-    users = db.session.query(User).filter_by(id=id,status=1).first()
+    current_user = get_jwt_identity()
+    users = db.session.query(User).filter_by(id=current_user,status=1).first()
+    organization_id = users.organization_id
+    users = db.session.query(User).filter_by(id=id,status=1,organization_id=int(organization_id)).first()
     users.status=False
     db.session.commit()
     print('user deleted successfully !!!!!' , users)
     return {'message' : 'user deleted successfully !!!!!'}
 
 @admin_bp.route('/restorebyadmin/<int:id>', methods=['PATCH'])
+@jwt_required()
 def restorebyadmin(id):
-    users = db.session.query(User).filter_by(id=id,status=0).first()
+    current_user = get_jwt_identity()
+    users = db.session.query(User).filter_by(id=current_user,status=1).first()
+    organization_id = users.organization_id
+    users = db.session.query(User).filter_by(id=id,status=0,organization_id=int(organization_id)).first()
     users.status=True
     db.session.commit()
     print('user restore successfully !!!!!' , users)

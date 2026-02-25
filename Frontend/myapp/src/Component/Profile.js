@@ -4,6 +4,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
+import { FaUser, FaEnvelope, FaIdBadge, FaCamera, FaEdit } from 'react-icons/fa';
 
 export default function Profile() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,8 +12,6 @@ export default function Profile() {
     username: "",
     email: "",
     role: "",
-    location: "",
-    about: "",
     profile_image: ""
   });
   const [selectedImage, setSelectedImage] = useState(null);
@@ -61,8 +60,6 @@ export default function Profile() {
     const formData = new FormData();
     formData.append('username', profile.username);
     formData.append('email', profile.email);
-    formData.append('location', profile.location || "");
-    formData.append('about', profile.about || "");
     
     if (selectedImage) {
       formData.append('profile_image', selectedImage);
@@ -97,7 +94,7 @@ export default function Profile() {
       <div className="profile-cover">
         <div className="profile-image-wrapper">
           <img
-            src={previewImage || profile.profile_image || "https://i.pravatar.cc/150?img=12"}
+            src={profile.profile_image}
             alt="profile"
             className="profile-image"
           />
@@ -107,13 +104,13 @@ export default function Profile() {
       <div className="profile-content">
         <div className="profile-header">
           <div>
-            <h2>{profile.username || "User"}</h2>
-            <p className="role">{profile.role || "Role"}</p>
-            {/* <p className="location">📍 {profile.location || "Location not set"}</p>
-            {profile.about && <p className="about-text">{profile.about}</p>} */}
+            <h2><FaUser style={{ marginRight: '8px' }} /> {profile.username || "User"}</h2>
+            <p className="role"><FaIdBadge style={{ marginRight: '8px' }} /> {profile.role || "Role"}</p>
+            <p className="email"><FaEnvelope style={{ marginRight: '8px' }} /> {profile.email}</p>
+          
           </div>
           <button className="edit-btn" onClick={() => setIsOpen(true)}>
-            Edit Profile
+            <FaEdit style={{ marginRight: '5px' }} /> Edit Profile
           </button>
         </div>
       </div>
@@ -154,21 +151,9 @@ export default function Profile() {
                 placeholder="Email" 
                 required 
               />
-              {/* <input 
-                type="text" 
-                name="location" 
-                value={profile.location} 
-                onChange={handleChange} 
-                placeholder="Location" 
-              />
-              <textarea 
-                name="about" 
-                value={profile.about} 
-                onChange={handleChange} 
-                placeholder="About"
-              ></textarea> */}
+
               
-              <label style={{fontSize: '14px', fontWeight: 'bold', marginTop: '10px'}}>Profile Picture</label>
+              <label style={{fontSize: '14px', fontWeight: 'bold', marginTop: '10px'}}><FaCamera style={{ marginRight: '5px' }} /> Profile Picture</label>
               <input 
                 type="file" 
                 accept="image/*" 

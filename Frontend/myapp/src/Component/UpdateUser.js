@@ -31,12 +31,12 @@ function UpdateUser() {
       .catch((err) => console.error(err));
 
     // Load organizations
-    api.get("/signup/organization/")
+    api.get("/api/organization/")
       .then((res) => setOrganizations(res.data))
       .catch((err) => console.error(err));
 
     // Load roles
-    api.get("/signup/role/")
+    api.get("/api/role/")
       .then((res) => setRolesList(res.data))
       .catch((err) => console.error(err));
 

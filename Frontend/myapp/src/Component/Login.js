@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
 import './Login.css'; // Custom styling for Login
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useEffect, useState } from "react";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [organization, setOrganization] = useState('');
+  const [organizations, setOrganizations] = useState([]);
   const [error, setError] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/auth/login/', {email,password});
+      const response = await axios.post('http://127.0.0.1:5000/auth/login/', {email,password,organization});
       if (response.status === 200) {
         debugger;
         const accesstoken = response.data.access_token; 
@@ -32,6 +34,15 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+  axios.get("http://127.0.0.1:5000/api/organization/").then((response) => {
+      setOrganizations(response.data);
+    }
+  ).catch((error) => {
+      console.error("Error fetching organizations:", error);
+    });
+}, []);
+
   return (
     <div className="bodylogin">
       <div className="login-container">
@@ -47,6 +58,19 @@ const Login = () => {
               required
             />
           </div>
+                  <select
+          value={organization}
+          onChange={(e) => setOrganization(e.target.value)}
+          required
+        >
+          <option value="">Select Organization</option>
+
+          {organizations.map((org) => (
+            <option key={org.id} value={org.id}>
+              {org.name}
+            </option>
+          ))}
+        </select>
           <div className="form-group password-input">
               <input
                 type={passwordVisible ? 'text' : 'password'}

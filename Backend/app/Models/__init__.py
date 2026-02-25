@@ -24,7 +24,7 @@ class User(db.Model):
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    # profile_image = db.Column(db.String(255), nullable=True)
+    profile_image = db.Column(db.String(255), nullable=True)
     # One Organization
     organization_id = db.Column(db.Integer,db.ForeignKey("organizations.id"),nullable=False)
     organization = db.relationship("Organization",back_populates="users")

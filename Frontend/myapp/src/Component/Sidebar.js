@@ -50,10 +50,9 @@ export default function Sidebar() {
                 <span>Role</span>
              </NavLink>
           </li>
+          </>)}
+
          
-           {/* #....................................................# */}
-
-
           <li>
              <NavLink to="/profile" className="nav-link">
               <FaUser />
@@ -61,7 +60,7 @@ export default function Sidebar() {
              </NavLink>
            
           </li>
-         </>)}
+         
         </ul>
       </nav>
 

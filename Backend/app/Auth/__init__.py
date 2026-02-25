@@ -11,10 +11,11 @@ from flask import url_for # Make sure to import this
 @auth_bp.route('/login/', methods=['POST'])
 def login():
     payload = request.get_json()
+    print(payload)
     useremail = payload['email']
     userpassword = payload['password']
-    print(userpassword)
-    user =db.session.query(User).filter_by(email=useremail , status=1).first()
+    organization = payload['organization']
+    user =db.session.query(User).filter_by(email=useremail , status=1 , organization_id=int(organization)).first()
     if user:
         if user and check_password_hash(user.password, userpassword):
                 access_token = create_access_token(

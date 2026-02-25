@@ -10,19 +10,22 @@ dashboard_bp = Blueprint('dashboard', __name__ , url_prefix='/api')
 def get_users():
     Userroles = get_jwt()
     if "Admin" in Userroles["roles"]:
+        current_user = get_jwt_identity()
+        users = db.session.query(User).filter_by(id=current_user,status=1).first()
+        organization_id = users.organization_id
         users_schema = UserSchema(many=True)
         current_page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         offset_value = (current_page - 1) * per_page
         # Active users with pagination
-        users = db.session.query(User).filter_by(status=True).offset(offset_value).limit(per_page).all()
+        users = db.session.query(User).filter_by(status=True,organization_id=int(organization_id)).offset(offset_value).limit(per_page).all()
         
-        trash_users = db.session.query(User).filter_by(status=False).all()
+        trash_users = db.session.query(User).filter_by(status=False,organization_id=int(organization_id)).all()
 
         # Counts
-        active_count = db.session.query(User).filter_by(status=True).count()
-        trash_count = db.session.query(User).filter_by(status=False).count()
-        total_users = db.session.query(User).count()
+        active_count = db.session.query(User).filter_by(status=True,organization_id=int(organization_id)).count()
+        trash_count = db.session.query(User).filter_by(status=False,organization_id=int(organization_id)).count()
+        total_users = db.session.query(User).filter_by(organization_id=int(organization_id)).count()
 
         # Total pages
         total_pages = (active_count + per_page - 1) // per_page

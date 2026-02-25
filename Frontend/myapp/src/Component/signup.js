@@ -23,7 +23,7 @@ const Signup = () => {
 
   useEffect(() => {
     debugger;
-    axios.get("http://127.0.0.1:5000/signup/role/").then((response) => {
+    axios.get("http://127.0.0.1:5000/api/role/").then((response) => {
             setRolesList(response.data);
           }).catch((error) => {
               console.error("Error fetching roles:", error);
@@ -31,7 +31,7 @@ const Signup = () => {
          }, []);
 
 useEffect(() => {
-  axios.get("http://127.0.0.1:5000/signup/organization/").then((response) => {
+  axios.get("http://127.0.0.1:5000/api/organization/").then((response) => {
       setOrganizations(response.data);
     }
   ).catch((error) => {
