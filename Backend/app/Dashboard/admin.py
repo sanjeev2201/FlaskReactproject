@@ -151,7 +151,7 @@ def get_user(id):
 @jwt_required()
 def userupdationbyadmin(id):
     payload = request.json
-    print(payload)
+    # print(payload)
     Insert = User()
     Insert.id = id
     Insert.username=payload['username']

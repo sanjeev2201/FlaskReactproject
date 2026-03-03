@@ -60,6 +60,7 @@ function Organization() {
         await axios.put(`http://127.0.0.1:5000/api/organization/${orgId}/`, { name: orgName }, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        alert('Organization updated successfully');
         fetchOrganizations();
         setOrgId('');
         setOrgName('');

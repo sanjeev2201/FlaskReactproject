@@ -48,14 +48,24 @@ def login():
 
 @auth_bp.route('/resetpwd/', methods=['POST'])
 def ResetPassword():
-    payload = request.get_json()
-    useremail = payload['email']
-    userpassword = payload['password'].strip()
-    user =db.session.query(User).filter_by(email=useremail , status=1).first()
-    # print('reset user emailid : ' , user)
-    user.password = generate_password_hash(userpassword)
-    db.session.commit()
-    return {"message": "Password updated successfully"}
+    try:
+        payload = request.get_json()
+        # print(payload)
+        useremail = payload['email']
+        userpassword = payload['password'].strip()
+        orgid = int(payload['organization'])
+        user =db.session.query(User).filter_by(email=useremail , status=1,organization_id= orgid).first()
+        if not user:
+            return jsonify({"message": "Invalid email address"}), 401
+        print('reset user emailid : ' , user)
+        user.password = generate_password_hash(userpassword)
+        db.session.commit()
+        return jsonify({"message": "Password updated successfully"})
+    except Exception as e:
+        print(f"Error resetting password: {e}")
+        return jsonify({"message": "Failed to reset password", "error": str(e)}), 500
+    finally:
+        db.session.close()
 
 
 

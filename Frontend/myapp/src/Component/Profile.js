@@ -13,6 +13,7 @@ export default function Profile() {
     email: "",
     role: "",
     profile_image: ""
+    
   });
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);

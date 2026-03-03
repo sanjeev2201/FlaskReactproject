@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import './Login.css'; // Custom styling for Login
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Resetpassword = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [organization, setOrganization] = useState('');
+  const [organizations, setOrganizations] = useState([]);
   const [error, setError] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  useEffect(() => {
+  axios.get("http://127.0.0.1:5000/api/organization/").then((response) => {
+      setOrganizations(response.data);
+    }
+  ).catch((error) => {
+      console.error("Error fetching organizations:", error);
+    });
+}, []);
+
+  const handleResetPassword = async (e) => {
     e.preventDefault();
     try {
-      // Send login request to the backend
-      const response = await axios.post('http://127.0.0.1:5000/auth/resetpwd/', { email, password });
-      if (response.status === 200) {
-        // Redirect to a protected route
-        navigate('/login');
-      }
+      // Send reset password request to the backend
+      const response = await axios.post('http://127.0.0.1:5000/auth/resetpwd/', { email, password, organization });
+      const message = response.data['message'];
+      toast.success(message, {
+        autoClose: 5000,
+      });
+      navigate('/login');
     } catch (error) {
-      // Handle errors
-      if (error.response && error.response.data) {
-        setError(error.response.data.message || 'reset password failed');
-      } else {
-        setError('An unexpected error occurred');
-      }
+      console.error('Error resetting password:', error);
+      toast.error(error.response?.data?.message || 'Error resetting password. Please try again.');
     }
   };
 
@@ -33,8 +42,8 @@ const Resetpassword = () => {
     <div className="bodylogin">
       <div className="login-container">
         {error && <p className="error">{error}</p>}
-        <form onSubmit={handleLogin} className="login-form">
-          <h2>Forget Password</h2>
+        <form onSubmit={handleResetPassword} className="login-form">
+          <h2>Reset Password</h2>
           <div className="form-group">
             <input
               type="email"
@@ -44,6 +53,19 @@ const Resetpassword = () => {
               required
             />
           </div>
+           <select
+          value={organization}
+          onChange={(e) => setOrganization(e.target.value)}
+          required
+        >
+          <option value="">Select Organization</option>
+
+          {organizations.map((org) => (
+            <option key={org.id} value={org.id}>
+              {org.name}
+            </option>
+          ))}
+        </select>
           <div className="form-group password-input">
               <input
                 type={passwordVisible ? 'text' : 'password'}
@@ -62,13 +84,14 @@ const Resetpassword = () => {
           </div>
           <div className="form-group">
             <button type="submit" className="btn btn-primary">
-              Login
+              Reset Password
             </button>
           </div>
           <p>
-            Already have an account? <a href="/login">login</a>
+            Already have an account? <a href="/login">Login</a>
           </p>
         </form>
+        <ToastContainer />
       </div>
     </div>
   );

@@ -58,19 +58,12 @@ const Login = () => {
               required
             />
           </div>
-                  <select
-          value={organization}
-          onChange={(e) => setOrganization(e.target.value)}
-          required
-        >
-          <option value="">Select Organization</option>
-
-          {organizations.map((org) => (
-            <option key={org.id} value={org.id}>
-              {org.name}
-            </option>
-          ))}
-        </select>
+          <select value={organization}  onChange={(e) => setOrganization(e.target.value)}  required >
+              <option value="">Select Organization</option>
+              {organizations.map((org) => ( <option key={org.id} value={org.id}> {org.name}
+                </option>
+              ))}
+          </select>
           <div className="form-group password-input">
               <input
                 type={passwordVisible ? 'text' : 'password'}
